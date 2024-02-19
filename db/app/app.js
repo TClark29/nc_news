@@ -1,7 +1,7 @@
 const express = require("express");
 const fs = require("fs/promises");
 const { readEndpointsFile } = require("../../utils");
-const { getArticle } = require("./controllers/article-controllers");
+const { getArticle, getArticles } = require("./controllers/article-controllers");
 const { getTopics } = require("../app/controllers/topic-controllers");
 
 const app = express();
@@ -14,6 +14,8 @@ app.get("/api", (req, res, next) => {
 });
 
 app.get("/api/topics", getTopics);
+
+app.get("/api/articles", getArticles)
 
 app.get("/api/articles/:id", getArticle);
 
