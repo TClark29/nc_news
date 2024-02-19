@@ -3,7 +3,7 @@ const fs = require("fs/promises");
 const { readEndpointsFile } = require("../../utils");
 const { getArticle, getArticles } = require("./controllers/article-controllers");
 const { getTopics } = require("../app/controllers/topic-controllers");
-const { getCommentsByArticleId} = require("../app/controllers/comment-controllers")
+const { getCommentsByArticleId, postCommentByArticleId} = require("../app/controllers/comment-controllers")
 
 const app = express();
 app.use(express.json());
@@ -22,9 +22,15 @@ app.get("/api/articles/:id", getArticle);
 
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 
+app.post('/api/articles/:article_id/comments', postCommentByArticleId)
+
 app.use((error, req, res, next) => {
   if (error.status && error.msg) {
     res.status(error.status).send({ msg: error.msg });
+  }
+
+  if(error.code === '23503') {
+    res.status(401).send({msg: 'Unauthorised User' })
   }
 
   if (error.code === "22P02") {
