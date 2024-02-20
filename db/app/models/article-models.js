@@ -31,19 +31,20 @@ function selectAllArticles(sort_by = "created_at", order = "desc") {
   });
 }
 
-function updateArticleVotes(id, votes){
+function updateArticleVotes(id, votes) {
+
+
+  const queryValues = [votes, id];
+  const queryStr = `UPDATE articles SET votes = votes + $1 WHERE article_id= $2 RETURNING *`;
+
+  return db.query(queryStr, queryValues).then((response) => {
     
-    const queryValues = [votes, id]
-    const queryStr = `UPDATE articles SET votes = votes + $1 WHERE article_id= $2 RETURNING *` 
-    return db.query(queryStr, queryValues)
-    .then((response)=>{
-        if (response.rowCount === 0) {
-            return Promise.reject({ status: 404, msg: "Not Found" });
-          }
-        return response.rows[0]
-    })
- 
+    if (response.rowCount === 0) {
+      return Promise.reject({ status: 404, msg: "Not Found" });
+    }
     
+    return response.rows[0];
+  });
 }
 
 module.exports = { selectArticleById, selectAllArticles, updateArticleVotes };

@@ -318,6 +318,70 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
+describe("/api/comments/:comment_id", () => {
+  describe("GET", () => {
+    test("Selects a comment by given comment_id", () => {
+      return request(app)
+        .get("/api/comments/1")
+        .expect(200)
+        .then((response) => {
+          const comment = response.body.comment
+          expect(comment.comment_id).toBe(1)
+          expect(comment.body).toBe("Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!")
+          expect(comment.article_id).toBe(9)
+          expect(comment.author).toBe('butter_bridge')
+          expect(comment.votes).toBe(16)
+          expect(comment.created_at).toBe('2020-04-06T12:17:00.000Z')
+        });
+    });
+    test("Returns 404 when given valid comment_id that does not exist", ()=>{
+      return request(app)
+      .get("/api/comments/10000")
+      .expect(404)
+      .then((response)=>{
+        expect(response.body.msg).toBe('Not Found')
+      })
+
+    })
+    test("Returns 400 when given invalid comment_id", ()=>{
+      return request(app)
+      .get("/api/comments/gorilla")
+      .expect(400)
+      .then((response)=>{
+        expect(response.body.msg).toBe('Bad Request')
+      })
+
+    })
+
+  });
+  describe("DELETE", () => {
+    test("Deletes comment at given comment_id and responds with 204 and empty response", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then((response) => {
+          expect(response.body).toEqual({});
+        });
+    });
+    test("Returns a 404 if given a comment_id that doesn't exist", () => {
+      return request(app)
+        .delete("/api/comments/1000")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toEqual("Not Found");
+        });
+    });
+    test("Returns a 400 if given a comment_id that is invalid", () => {
+      return request(app)
+        .delete("/api/comments/hippo")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toEqual("Bad Request");
+        });
+    });
+  });
+});
+
 describe("General errors", () => {
   test("Path does not exist", () => {
     return request(app).get("/api/toast").expect(404);
