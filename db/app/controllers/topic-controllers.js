@@ -1,5 +1,5 @@
 module.exports = { getTopics };
-const {getAllTopics} = require('../models/topic-models')
+const {getAllTopics} = require('../models/topic-models.js')
 
 
 function getTopics(req, res, next) {
@@ -9,4 +9,4 @@ function getTopics(req, res, next) {
       res.status(200).send({topics});
     })
     .catch(next);
-}
+};

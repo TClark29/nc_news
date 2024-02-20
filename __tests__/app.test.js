@@ -65,6 +65,44 @@ describe("/api/topics", () => {
   });
 });
 
+describe('/api/articles/:id', ()=>{
+  describe('GET', ()=>{
+    test('returns a 200 status and a body with the correct keys',()=>{
+      return request(app)
+    .get('/api/articles/1')
+    .expect(200)
+    .then((response)=>{
+      const article = response.body.article
+      expect(typeof article.article_id).toBe('number')
+      expect(typeof article.title).toBe('string')
+      expect(typeof article.topic).toBe('string')
+      expect(typeof article.author).toBe('string')
+      expect(typeof article.created_at).toBe('string')
+      expect(typeof article.votes).toBe('number')
+      expect(typeof article.article_img_url).toBe('string')
+    })
+    
+    
+    })
+    test('Returns a 400 bad request error when given an :id parameter which is not valid',()=>{
+      return request(app)
+      .get('/api/articles/elephant')
+        .expect(400)
+        .then((response)=>
+         expect(response.body.msg).toBe('Bad Request'))
+      })
+      test('Returns a 404 not found error when given a valid Id that does not exist',()=>{
+        return request(app)
+        .get('/api/articles/99999')
+          .expect(404)
+          .then((response)=>
+           expect(response.body.msg).toBe('Not Found'))
+        })
+    })
+  })
+
+
+
 describe("General errors", () => {
   test("Path does not exist", () => {
     return request(app).get("/api/toast").expect(404);
