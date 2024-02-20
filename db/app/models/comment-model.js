@@ -1,5 +1,5 @@
 const db = require("../../connection")
-selectCommentsByArticleId
+
 
 function selectCommentsByArticleId(id, sort_by='created_at', order='desc'){
 
@@ -17,8 +17,26 @@ function selectCommentsByArticleId(id, sort_by='created_at', order='desc'){
     })
 }
 
+function insertComment(id, body, username){
+    
+
+    const queryStr = `INSERT INTO comments (article_id, body, author) VALUES ($1, $2, $3) RETURNING*`
+    const queryValues = [id, body, username]
+
+    return db.query(queryStr, queryValues)
+    .then((response)=>{
+        return response.rows[0]
+    })
+   
+   
 
 
 
 
-module.exports = {selectCommentsByArticleId}
+}
+
+
+
+
+
+module.exports = {selectCommentsByArticleId, insertComment}

@@ -143,7 +143,7 @@ describe("api/articles", () => {
   });
 });
 
-describe("/api/articles/:id/comments", () => {
+describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
     test("Responds with 200 status code and an array of comments with the correct keys", () => {
       return request(app)
@@ -153,7 +153,6 @@ describe("/api/articles/:id/comments", () => {
           const comments = response.body.comments;
           expect(comments.length).toBe(11);
           comments.forEach((comment) => {
-          
             expect(typeof comment.comment_id).toBe("number");
             expect(typeof comment.votes).toBe("number");
             expect(typeof comment.created_at).toBe("string");
@@ -196,7 +195,55 @@ describe("/api/articles/:id/comments", () => {
           expect(response.body.comments).toEqual([]);
         });
     });
+  });
+  describe("POST", () => {
+    test("Can post an article at valid id by sending body and username", () => {
+      const postData = { body: "example body", username: "butter_bridge" };
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send(postData)
+        .expect(201)
+        .then((response) => {
+          const comment = response.body.comment;
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.article_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.created_at).toBe("string");
+        });
+    });
+    test("Returns 400 Bad Request if given an article_id that is invalid", () => {
+      const postData = { body: "example body", username: "butter_bridge" }
+      return request(app)
+      .get("/api/articles/soap/comments")
+      .send(postData)
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad Request");
+        });
+    });
+    test("Returns 404 not found if given a valid article_id that does not exist", () => {
+      const postData = { body: "example body", username: "butter_bridge" }
+      return request(app)
+        .post("/api/articles/12345/comments")
+        .send(postData)
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not Found");
+        });
+    });
+    test("Returns a 401 when given an invalid username", ()=>{
+      const postData = { body: "example body", username: "not_a_user" }
+      return request(app)
+      .post("/api/articles/2/comments")
+        .send(postData)
+        .expect(401)
+        .then((response) =>{
+          expect(response.body.msg).toBe('Unauthorised User')
+        })
 
+    })
   });
 });
 
