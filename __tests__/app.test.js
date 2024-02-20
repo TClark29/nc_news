@@ -94,6 +94,24 @@ describe("/api/articles/:id", () => {
         .expect(404)
         .then((response) => expect(response.body.msg).toBe("Not Found"));
     });
+    test("Returned article has a comment_count property with total number of comments", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article.comment_count).toBe("11");
+        });
+    });
+    test("Returned article has a comment_count property that works for articles with 0 comments", () => {
+      return request(app)
+        .get("/api/articles/2")
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article.comment_count).toBe("0");
+        });
+    });
   });
   describe("PATCH", () => {
     test("Returns 200 status and the correct update article when sent a body containing votes to update", () => {
@@ -218,21 +236,19 @@ describe("api/articles", () => {
           const articles = response.body.articles;
           expect(articles.length).toBe(12);
           articles.forEach((article) => {
-            expect(article.topic).toBe('mitch')
-            
+            expect(article.topic).toBe("mitch");
           });
         });
     });
-    test("returns an empty array when given a topic that does not exist", () =>{
+    test("returns an empty array when given a topic that does not exist", () => {
       return request(app)
-      .get("/api/articles?topic=elephant")
+        .get("/api/articles?topic=elephant")
         .expect(200)
         .then((response) => {
           const articles = response.body.articles;
-          expect(articles.length).toBe(0)
-
-        })
-    })
+          expect(articles.length).toBe(0);
+        });
+    });
   });
 });
 
@@ -307,17 +323,17 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
     test("Returns 400 Bad Request if given an article_id that is invalid", () => {
-      const postData = { body: "example body", username: "butter_bridge" }
+      const postData = { body: "example body", username: "butter_bridge" };
       return request(app)
-      .get("/api/articles/soap/comments")
-      .send(postData)
+        .get("/api/articles/soap/comments")
+        .send(postData)
         .expect(400)
         .then((response) => {
           expect(response.body.msg).toBe("Bad Request");
         });
     });
     test("Returns 404 not found if given a valid article_id that does not exist", () => {
-      const postData = { body: "example body", username: "butter_bridge" }
+      const postData = { body: "example body", username: "butter_bridge" };
       return request(app)
         .post("/api/articles/12345/comments")
         .send(postData)
@@ -326,10 +342,10 @@ describe("/api/articles/:article_id/comments", () => {
           expect(response.body.msg).toBe("Not Found");
         });
     });
-    test("Returns a 401 when given an invalid username", ()=>{
-      const postData = { body: "example body", username: "not_a_user" }
+    test("Returns a 401 when given an invalid username", () => {
+      const postData = { body: "example body", username: "not_a_user" };
       return request(app)
-      .post("/api/articles/2/comments")
+        .post("/api/articles/2/comments")
         .send(postData)
         .expect(400)
         .then((response) => {
@@ -346,34 +362,33 @@ describe("/api/comments/:comment_id", () => {
         .get("/api/comments/1")
         .expect(200)
         .then((response) => {
-          const comment = response.body.comment
-          expect(comment.comment_id).toBe(1)
-          expect(comment.body).toBe("Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!")
-          expect(comment.article_id).toBe(9)
-          expect(comment.author).toBe('butter_bridge')
-          expect(comment.votes).toBe(16)
-          expect(comment.created_at).toBe('2020-04-06T12:17:00.000Z')
+          const comment = response.body.comment;
+          expect(comment.comment_id).toBe(1);
+          expect(comment.body).toBe(
+            "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+          );
+          expect(comment.article_id).toBe(9);
+          expect(comment.author).toBe("butter_bridge");
+          expect(comment.votes).toBe(16);
+          expect(comment.created_at).toBe("2020-04-06T12:17:00.000Z");
         });
     });
-    test("Returns 404 when given valid comment_id that does not exist", ()=>{
+    test("Returns 404 when given valid comment_id that does not exist", () => {
       return request(app)
-      .get("/api/comments/10000")
-      .expect(404)
-      .then((response)=>{
-        expect(response.body.msg).toBe('Not Found')
-      })
-
-    })
-    test("Returns 400 when given invalid comment_id", ()=>{
+        .get("/api/comments/10000")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not Found");
+        });
+    });
+    test("Returns 400 when given invalid comment_id", () => {
       return request(app)
-      .get("/api/comments/gorilla")
-      .expect(400)
-      .then((response)=>{
-        expect(response.body.msg).toBe('Bad Request')
-      })
-
-    })
-
+        .get("/api/comments/gorilla")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad Request");
+        });
+    });
   });
   describe("DELETE", () => {
     test("Deletes comment at given comment_id and responds with 204 and empty response", () => {
@@ -403,23 +418,23 @@ describe("/api/comments/:comment_id", () => {
   });
 });
 
-describe("/api/users", () =>{
-  describe("GET", ()=>{
-    test("Responds with an object containing array of users with correct keys and 200 status code", () =>{
+describe("/api/users", () => {
+  describe("GET", () => {
+    test("Responds with an object containing array of users with correct keys and 200 status code", () => {
       return request(app)
-      .get('/api/users')
-      .expect(200)
-      .then((response) =>{
-        const users = response.body.users
-        expect(users.length).toBe(4)
-        users.forEach((user)=>{
-          const expectedKeys = ['username','name','avatar_url']
-          expect(Object.keys(user)).toEqual(expectedKeys)
-        })
-      })
-    })
-  })
-})
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+          const users = response.body.users;
+          expect(users.length).toBe(4);
+          users.forEach((user) => {
+            const expectedKeys = ["username", "name", "avatar_url"];
+            expect(Object.keys(user)).toEqual(expectedKeys);
+          });
+        });
+    });
+  });
+});
 
 describe("General errors", () => {
   test("Path does not exist", () => {
