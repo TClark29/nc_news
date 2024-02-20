@@ -70,7 +70,7 @@
       ]
     }
   },
-  "POST /api/articles/:id/comments" : {
+  "POST /api/articles/:id/comments": {
     "description": "Posts a comment to the article included as a parametric endpoint",
     "queries": [],
     "example response": {
@@ -78,10 +78,24 @@
         "comment_id": 19,
         "body": "example body",
         "article_id": 2,
-       "author": "butter_bridge",
+        "author": "butter_bridge",
         "votes": 0,
         "created_at": "2024-02-19T20:26:15.651Z"
-
+      }
+    }
+  },
+  "PATCH /api/articles/:id/": {
+    "description": "Updates the number of votes on an article",
+    "queries": [],
+    "example response": {
+      "article": {
+        "article_id": 19,
+        "body": "example body",
+        "article_img_url": "https://website.com",
+        "author": "butter_bridge",
+        "topic": "example topic",
+        "votes": 0,
+        "created_at": "2023-02-19T22:25:11.951Z"
       }
     }
   }

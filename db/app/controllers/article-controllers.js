@@ -1,4 +1,4 @@
-const {selectArticleById, selectAllArticles} = require('./../models/article-models')
+const {selectArticleById, selectAllArticles, updateArticleVotes} = require('./../models/article-models')
 
 function getArticles(req, res, next){
     return selectAllArticles()
@@ -22,4 +22,19 @@ function getArticle(req, res, next){
     .catch(next)
 }
 
-module.exports = {getArticle, getArticles}
+function patchArticle(req, res, next){
+   
+    const id = req.params.id
+    const votes = req.body.inc_votes 
+    return updateArticleVotes(id, votes)
+    .then((response)=>{
+       
+        const article = response
+        res.status(200).send({article})
+    })
+    .catch((err =>{
+        next(err)
+    }))
+}
+
+module.exports = {getArticle, getArticles, patchArticle}
