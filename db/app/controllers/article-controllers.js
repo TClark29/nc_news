@@ -1,43 +1,40 @@
-const {selectArticleById, selectAllArticles, updateArticleVotes} = require('./../models/article-models')
+const {
+  selectArticleById,
+  selectAllArticles,
+  updateArticleVotes,
+} = require("./../models/article-models");
 
-
-function getArticles(req, res, next){
-    return selectAllArticles()
-    .then((response)=>{
-        const articles = response
-        res.status(200).send({articles})
+function getArticles(req, res, next) {
+  const topic = req.query.topic;
+  return selectAllArticles(topic)
+    .then((response) => {
+      const articles = response;
+      res.status(200).send({ articles });
     })
-    .catch(next)
+    .catch(next);
 }
 
-
-function getArticle(req, res, next){
-    const id = req.params.id
-    return selectArticleById(id)
-    .then((response)=>{
-        const article = response
-        res.status(200).send({article})
-        
-       
+function getArticle(req, res, next) {
+  const id = req.params.id;
+  return selectArticleById(id)
+    .then((response) => {
+      const article = response;
+      res.status(200).send({ article });
     })
-    .catch(next)
+    .catch(next);
 }
 
-function patchArticle(req, res, next){
-   
-
-   
-    const id = req.params.id
-    const votes = req.body.inc_votes 
-    return updateArticleVotes(id, votes)
-    .then((response)=>{
-     
-        const article = response
-        res.status(200).send({article})
+function patchArticle(req, res, next) {
+  const id = req.params.id;
+  const votes = req.body.inc_votes;
+  return updateArticleVotes(id, votes)
+    .then((response) => {
+      const article = response;
+      res.status(200).send({ article });
     })
-    .catch((err =>{
-        next(err)
-    }))
+    .catch((err) => {
+      next(err);
+    });
 }
 
-module.exports = {getArticle, getArticles, patchArticle}
+module.exports = { getArticle, getArticles, patchArticle };
