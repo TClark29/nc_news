@@ -324,7 +324,6 @@ describe("/api/articles/:article_id/comments", () => {
     });
     test("Returns 400 Bad Request if given an article_id that is invalid", () => {
       const postData = { body: "example body", username: "butter_bridge" };
-      const postData = { body: "example body", username: "butter_bridge" };
       return request(app)
         .get("/api/articles/soap/comments")
         .send(postData)
