@@ -380,6 +380,24 @@ describe("/api/comments/:comment_id", () => {
   });
 });
 
+describe("/api/users", () =>{
+  describe("GET", ()=>{
+    test("Responds with an object containing array of users with correct keys and 200 status code", () =>{
+      return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then((response) =>{
+        const users = response.body.users
+        expect(users.length).toBe(4)
+        users.forEach((user)=>{
+          const expectedKeys = ['username','name','avatar_url']
+          expect(Object.keys(user)).toEqual(expectedKeys)
+        })
+      })
+    })
+  })
+})
+
 describe("General errors", () => {
   test("Path does not exist", () => {
     return request(app).get("/api/toast").expect(404);

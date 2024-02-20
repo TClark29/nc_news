@@ -4,6 +4,7 @@ const { readEndpointsFile } = require("../../utils");
 const { getArticle, getArticles, patchArticle } = require("./controllers/article-controllers");
 const { getTopics } = require("../app/controllers/topic-controllers");
 const { getCommentsByArticleId, postCommentByArticleId, deleteComment, getComment} = require("../app/controllers/comment-controllers")
+const {getUsers} = require('./controllers/user-controller')
 
 const app = express();
 app.use(express.json());
@@ -29,6 +30,8 @@ app.post('/api/articles/:article_id/comments', postCommentByArticleId)
 app.get('/api/comments/:comment_id', getComment)
 
 app.delete('/api/comments/:comment_id', deleteComment)
+
+app.get('/api/users', getUsers)
 
 
 
