@@ -95,8 +95,80 @@ describe("/api/articles/:id", () => {
         .then((response) => expect(response.body.msg).toBe("Not Found"));
     });
   });
-});
+  describe("PATCH", () => {
+    test("Returns 200 status and the correct update article when sent a body containing votes to update", () => {
+      const patchUpdate = { inc_votes: 1 };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(patchUpdate)
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article.votes).toBe(101);
+          expect(article.title).toBe("Living in the shadow of a great man");
+          expect(article.topic).toBe("mitch");
+          expect(article.body).toBe("I find this existence challenging");
+          expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
+          expect(article.article_img_url).toBe(
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          );
+        });
+    });
+    test("Works for negative votes", () => {
+      const patchUpdate = { inc_votes: -50 };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(patchUpdate)
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article.votes).toBe(50);
+        });
+    });
+    test("Returns 404 when given article id that does not exist", () => {
+      const patchUpdate = { inc_votes: -50 };
+      return request(app)
+        .patch("/api/articles/999")
+        .send(patchUpdate)
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not Found")
+        });
+    });
+    test("Returns 400 when given invalid article id", () => {
+      const patchUpdate = { inc_votes: -50 };
+      return request(app)
+        .patch("/api/articles/greenhouse")
+        .send(patchUpdate)
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad Request")
+        });
+      });
+      test("Returns 400 when given a body with an invalid inc_votes value", () =>{
+        const patchUpdate = { inc_votes: 'One' };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(patchUpdate)
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad Request")
+        });
 
+      })
+      test("Returns 400 when given a body with an invalid key", () =>{
+        const patchUpdate = { changed_votes: 1 };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(patchUpdate)
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad Request")
+        });
+
+      })
+  });
+});
 describe("api/articles", () => {
   describe("GET", () => {
     test("returns an object contaning an array of articles, which all have the correct properties, with the body property removed and comment_count added", () => {
@@ -214,17 +286,17 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
     test("Returns 400 Bad Request if given an article_id that is invalid", () => {
-      const postData = { body: "example body", username: "butter_bridge" }
+      const postData = { body: "example body", username: "butter_bridge" };
       return request(app)
-      .get("/api/articles/soap/comments")
-      .send(postData)
+        .get("/api/articles/soap/comments")
+        .send(postData)
         .expect(400)
         .then((response) => {
           expect(response.body.msg).toBe("Bad Request");
         });
     });
     test("Returns 404 not found if given a valid article_id that does not exist", () => {
-      const postData = { body: "example body", username: "butter_bridge" }
+      const postData = { body: "example body", username: "butter_bridge" };
       return request(app)
         .post("/api/articles/12345/comments")
         .send(postData)
@@ -233,17 +305,16 @@ describe("/api/articles/:article_id/comments", () => {
           expect(response.body.msg).toBe("Not Found");
         });
     });
-    test("Returns a 401 when given an invalid username", ()=>{
-      const postData = { body: "example body", username: "not_a_user" }
+    test("Returns a 400 bad request when given an invalid username", () => {
+      const postData = { body: "example body", username: "not_a_user" };
       return request(app)
-      .post("/api/articles/2/comments")
+        .post("/api/articles/2/comments")
         .send(postData)
-        .expect(401)
-        .then((response) =>{
-          expect(response.body.msg).toBe('Unauthorised User')
-        })
-
-    })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad Request");
+        });
+    });
   });
 });
 
