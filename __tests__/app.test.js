@@ -3,6 +3,7 @@ const data = require("../db/data/test-data/index.js");
 const db = require("../db/connection.js");
 const request = require("supertest");
 const app = require("../db/app/app.js");
+const { readEndpointsFile } = require("../utils.js");
 
 beforeEach(() => {
   return seed(data);
@@ -10,6 +11,28 @@ beforeEach(() => {
 
 afterAll(() => {
   return db.end();
+});
+
+describe("/api", () => {
+  describe("GET", () => {
+    test("returns a 200 status code", () => {
+      return request(app).get("/api").expect(200);
+    });
+    test("should return an object with a key of endpoints countaining objects. JSON should match endpoints.json file ", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((response) => {
+          const result = response.body
+          const expectedResult = readEndpointsFile()
+          return Promise.all([result, expectedResult])
+          .then((response)=>{
+            expect(response[0]).toEqual(response[1])
+            expect(typeof response[0]).not.toBe('string')
+          })
+        });
+    });
+  });
 });
 
 describe("/api/topics", () => {
@@ -42,13 +65,8 @@ describe("/api/topics", () => {
   });
 });
 
-describe('General errors', ()=>{
-    test('Path does not exist', ()=>{
-        return request(app)
-        .get("/api/toast")
-        .expect(404)
-      
-        })
-
-    })
-
+describe("General errors", () => {
+  test("Path does not exist", () => {
+    return request(app).get("/api/toast").expect(404);
+  });
+});
