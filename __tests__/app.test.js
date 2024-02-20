@@ -210,6 +210,29 @@ describe("api/articles", () => {
           });
         });
     });
+    test("can accept a query to select by topic", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then((response) => {
+          const articles = response.body.articles;
+          expect(articles.length).toBe(12);
+          articles.forEach((article) => {
+            expect(article.topic).toBe('mitch')
+            
+          });
+        });
+    });
+    test("returns an empty array when given a topic that does not exist", () =>{
+      return request(app)
+      .get("/api/articles?topic=elephant")
+        .expect(200)
+        .then((response) => {
+          const articles = response.body.articles;
+          expect(articles.length).toBe(0)
+
+        })
+    })
   });
 });
 
