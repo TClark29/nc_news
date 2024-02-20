@@ -307,17 +307,17 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
     test("Returns 400 Bad Request if given an article_id that is invalid", () => {
-      const postData = { body: "example body", username: "butter_bridge" }
+      const postData = { body: "example body", username: "butter_bridge" };
       return request(app)
-      .get("/api/articles/soap/comments")
-      .send(postData)
+        .get("/api/articles/soap/comments")
+        .send(postData)
         .expect(400)
         .then((response) => {
           expect(response.body.msg).toBe("Bad Request");
         });
     });
     test("Returns 404 not found if given a valid article_id that does not exist", () => {
-      const postData = { body: "example body", username: "butter_bridge" }
+      const postData = { body: "example body", username: "butter_bridge" };
       return request(app)
         .post("/api/articles/12345/comments")
         .send(postData)
@@ -326,10 +326,10 @@ describe("/api/articles/:article_id/comments", () => {
           expect(response.body.msg).toBe("Not Found");
         });
     });
-    test("Returns a 401 when given an invalid username", ()=>{
-      const postData = { body: "example body", username: "not_a_user" }
+    test("Returns a 400 bad request when given an invalid username", () => {
+      const postData = { body: "example body", username: "not_a_user" };
       return request(app)
-      .post("/api/articles/2/comments")
+        .post("/api/articles/2/comments")
         .send(postData)
         .expect(400)
         .then((response) => {
