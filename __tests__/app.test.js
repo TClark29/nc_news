@@ -4,6 +4,7 @@ const db = require("../db/connection.js");
 const request = require("supertest");
 const app = require("../db/app/app.js");
 const { readEndpointsFile } = require("../utils.js");
+const { forEach } = require("../db/data/test-data/articles.js");
 
 beforeEach(() => {
   return seed(data);
@@ -139,6 +140,63 @@ describe("api/articles", () => {
           });
         });
     });
+  });
+});
+
+describe("/api/articles/:id/comments", () => {
+  describe("GET", () => {
+    test("Responds with 200 status code and an array of comments with the correct keys", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+          const comments = response.body.comments;
+          expect(comments.length).toBe(11);
+          comments.forEach((comment) => {
+          
+            expect(typeof comment.comment_id).toBe("number");
+            expect(typeof comment.votes).toBe("number");
+            expect(typeof comment.created_at).toBe("string");
+            expect(typeof comment.author).toBe("string");
+            expect(typeof comment.body).toBe("string");
+            expect(comment.article_id).toBe(1);
+          });
+        });
+    });
+    test("Comments are sorted by date from most recent by default", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+          const comments = response.body.comments;
+          expect(comments).toBeSorted({ key: "created_at", descending: true });
+        });
+    });
+    test("Returns 400 Bad Request if given an article_id that is invalid", () => {
+      return request(app)
+        .get("/api/articles/potato/comments")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad Request");
+        });
+    });
+    test("Returns 404 not found if given a valid article_id that does not exist", () => {
+      return request(app)
+        .get("/api/articles/9999/comments")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not Found");
+        });
+    });
+    test("Returns an empty array if given a valid, existing article_id which has no comments", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments).toEqual([]);
+        });
+    });
+
   });
 });
 
