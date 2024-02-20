@@ -25,7 +25,7 @@ function getArticle(req, res, next) {
 }
 
 function patchArticle(req, res, next) {
-  const id = req.params.article_id;
+  const id = req.params.id;
   const votes = req.body.inc_votes;
   return updateArticleVotes(id, votes)
     .then((response) => {
