@@ -14,7 +14,7 @@ afterAll(() => {
   return db.end();
 });
 
-describe("/api", () => {
+describe("/api/", () => {
   describe("GET", () => {
     test("returns a 200 status code", () => {
       return request(app).get("/api").expect(200);
