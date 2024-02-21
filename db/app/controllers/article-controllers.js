@@ -6,7 +6,9 @@ const {
 
 function getArticles(req, res, next) {
   const topic = req.query.topic;
-  return selectAllArticles(topic)
+   const sort_by = req.query.sort_by
+   const order = req.query.order
+  return selectAllArticles(topic, sort_by, order)
     .then((response) => {
       const articles = response;
       res.status(200).send({ articles });
@@ -16,6 +18,7 @@ function getArticles(req, res, next) {
 
 function getArticle(req, res, next) {
   const id = req.params.id;
+ 
   return selectArticleById(id)
     .then((response) => {
       const article = response;
