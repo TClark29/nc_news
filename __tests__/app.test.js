@@ -249,6 +249,66 @@ describe("api/articles", () => {
           expect(articles.length).toBe(0);
         });
     });
+    test("should accept a query to be sorted by any valid column in database, descending by default", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id")
+        .expect(200)
+        .then((response) => {
+          const articles = response.body.articles;
+          expect(articles.length).toBe(13);
+          expect(response.body.articles).toBeSorted({
+            key: "article_id",
+            descending: true,
+          });
+        });
+    });
+    test("should throw a 400 error if given an invalid sort_by value", () => {
+      return request(app)
+        .get("/api/articles?sort_by=wordcount")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe('Bad Request')
+        });
+    });
+
+    test("should accept a query to be sorted in ascending or descending order", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then((response) => {
+          const articles = response.body.articles;
+          expect(articles.length).toBe(13);
+          expect(response.body.articles).toBeSorted({
+           key: 'created_at', descending: false
+          });
+        });
+    });
+    test("should throw a 400 error if given an invalid order value", () => {
+      return request(app)
+        .get("/api/articles?order=random")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe('Bad Request')
+        });
+    });
+    test("should accept multiple queries", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&sort_by=title&order=asc")
+        .expect(200)
+        .then((response) => {
+          const articles = response.body.articles;
+          expect(articles.length).toBe(12);
+          expect(response.body.articles).toBeSorted({
+           key: 'title', descending: false
+          });
+          articles.forEach((article)=>{
+            expect(article.topic).toBe('mitch')
+          })
+        });
+    });
+
+
+
   });
 });
 

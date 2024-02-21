@@ -16,7 +16,7 @@ function selectArticleById(id) {
 }
 
 function selectAllArticles(topic, sort_by = "created_at", order = "desc") {
-  const acceptedSortBy = ["created_at"];
+  const acceptedSortBy = ["created_at", 'article_id', 'author', 'topic', 'votes', 'title'];
   const acceptedOrder = ["desc", "asc"];
   const queryVals = [];
 
