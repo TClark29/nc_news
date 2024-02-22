@@ -496,6 +496,32 @@ describe("/api/users", () => {
   });
 });
 
+describe("/api/users/:username", ()=>{
+  describe("GET", ()=>{
+    test("Responds with 200 status and user matching username",()=>{
+      return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then((response) => {
+        const user = response.body.user
+        expect(user.username).toBe('butter_bridge')
+        expect(user.avatar_url).toBe('https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg')
+        expect(user.name).toBe('jonny')
+        expect(Object.keys(user).length).toBe(3)
+       })
+    })
+    test("Responds with a 404 when given an invalid username", () => {
+      return request(app)
+      .get("/api/users/not_a_user")
+      .expect(404)
+      .then((response)=>{
+        expect(response.body.msg).toBe('Not Found')
+      })
+    })
+
+  })
+})
+
 describe("General errors", () => {
   test("Path does not exist", () => {
     return request(app).get("/api/toast").expect(404);
