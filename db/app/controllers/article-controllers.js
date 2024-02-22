@@ -2,6 +2,7 @@ const {
   selectArticleById,
   selectAllArticles,
   updateArticleVotes,
+  insertArticle
 } = require("./../models/article-models");
 
 function getArticles(req, res, next) {
@@ -40,4 +41,21 @@ function patchArticle(req, res, next) {
     });
 }
 
-module.exports = { getArticle, getArticles, patchArticle };
+function postArticle(req, res, next){
+
+  const title = req.body.title
+  const author = req.body.author
+  const body = req.body.body
+  const topic = req.body.topic
+  const article_img_url = req.body.article_img_url
+
+
+  return insertArticle(author, title, body, topic, article_img_url)
+  .then((response)=>{
+    const article = response
+    res.status(201).send({article})
+  })
+  .catch(next)
+}
+
+module.exports = { getArticle, getArticles, patchArticle, postArticle };
