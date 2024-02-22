@@ -13,7 +13,6 @@ function getCommentsByArticleId(req, res, next) {
   const page = req.query.p
   const sort_by = req.query.sort_by
   const order = req.query.order
-  console.log(limit)
   return selectArticleById(id)
     .then(() => {
       return selectCommentsByArticleId(id, sort_by, order, limit, page);

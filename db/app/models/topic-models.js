@@ -9,4 +9,16 @@ function getAllTopics() {
   });
 }
 
-module.exports = { getAllTopics };
+function insertTopic(slug, desc){
+
+  const queryStr = `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING *`
+  const queryVals = [slug, desc]
+
+  return db.query(queryStr, queryVals)
+  .then((response)=>{
+    return response.rows[0]
+  })
+
+}
+
+module.exports = { getAllTopics, insertTopic };

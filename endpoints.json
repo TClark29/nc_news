@@ -1,24 +1,23 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api",
-    "queries": [],
-    "exampleResponse": {
-      "endpoints": {
-        "GET /api/topics": {
-          "description": "serves an array of all topics",
-          "queries": [],
-          "exampleResponse": {
-            "topics": [{ "slug": "football", "description": "Footie!" }]
-          }
-        }
-      }
-    }
+    "description": "serves up a json representation of all the available endpoints of the api"
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
     "queries": [],
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
+    }
+  },
+  "POST/api/topics": {
+    "description": "inserts a new topic",
+    "queries": [],
+    "sentBodyFormat": {
+      "slug": "football",
+      "description(optional)": "Footie!"
+    },
+    "exampleResponse": {
+      "topic": { "slug": "football", "description": "Footie!" }
     }
   },
   "GET /api/articles": {
@@ -55,8 +54,8 @@
     }
   },
   "GET /api/articles/:id/comments": {
-    "description": "returns a single article by ID given as a parameter",
-    "queries": [],
+    "description": "returns comments from a single article by ID given as a parameter, default limit 10 page 1",
+    "queries": ["limit", "p"],
     "example response": {
       "comments": [
         {
@@ -71,8 +70,8 @@
     }
   },
   "POST /api/articles/:id/comments": {
-    "description": "Posts a comment to the article included as a parametric endpoint, default limit 10 page 1",
-    "queries": ["limit", "p"],
+    "description": "Posts a comment to the article included as a parametric endpoint",
+    "queries": [],
     "example response": {
       "comment": {
         "comment_id": 19,
