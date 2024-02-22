@@ -10,6 +10,11 @@ function readEndpointsFile(){
 
 }
 
+function bodyChecker(){
+
+    
+}
+
 
 
     

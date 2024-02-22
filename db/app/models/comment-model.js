@@ -53,4 +53,20 @@ function removeComment(id){
 
 }
 
-module.exports = { selectCommentsByArticleId, insertComment, removeComment, selectComment };
+function updateCommentVotes(id, inc_votes){
+
+
+  const queryStr = 'UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;'
+  const queryVals = [inc_votes, id]
+
+  return db.query(queryStr, queryVals)
+  .then((response)=>{
+    if (response.rowCount === 0) {
+      return Promise.reject({ status: 404, msg: "Not Found" });
+    }
+    return response.rows[0]
+  })
+
+}
+
+module.exports = { selectCommentsByArticleId, insertComment, removeComment, selectComment, updateCommentVotes };

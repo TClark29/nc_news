@@ -81,8 +81,8 @@
         "author": "butter_bridge",
         "votes": 0,
         "created_at": "2024-02-19T20:26:15.651Z"
-      }      }
-    
+      }
+    }
   },
   "PATCH /api/articles/:id/": {
     "description": "Updates the number of votes on an article",
@@ -96,8 +96,8 @@
         "topic": "example topic",
         "votes": 0,
         "created_at": "2023-02-19T22:25:11.951Z"
+      }
     }
-  }
   },
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes a comment by id given as parametric endpoint",
@@ -118,9 +118,9 @@
       }
     }
   },
-  "GET /api/users":{
-    "description":"Returns an array of all users",
-    "queries":[],
+  "GET /api/users": {
+    "description": "Returns an array of all users",
+    "queries": [],
     "example response": {
       "users": [
         {
@@ -128,8 +128,34 @@
           "name": "do_nothing",
           "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
         }
-
       ]
     }
+  },
+
+  "GET /api/users/:username": {
+    "description": "Returns a user by given username",
+    "queries": [],
+    "example response": {
+      "user": {
+        "username": "lurker",
+        "name": "do_nothing",
+        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+      }
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Increases the votes to a given comment by sent body",
+    "expectedBody": { "inc_votes": "number" },
+    "queries": [],
+    "example response": {
+      "comment": {
+        "comment_id": 12,
+        "body": "Massive intercranial brain haemorrhage",
+        "article_id": 1,
+        "author": "icellusedkars",
+        "votes": 2,
+        "created_at": "2020-03-02T07:10:00.000Z"
+      }
+    }
   }
-  }
+}

@@ -4,6 +4,7 @@ const {
   insertComment,
   removeComment,
   selectComment,
+  updateCommentVotes
 } = require("../models/comment-model.js");
 
 function getCommentsByArticleId(req, res, next) {
@@ -63,5 +64,19 @@ function getComment(req, res, next){
 
 }
 
+function patchComment(req, res, next){
+ 
+  const id = req.params.comment_id
+  const inc_votes = req.body.inc_votes
+  return updateCommentVotes(id, inc_votes)
+  .then((response)=>{
+    const comment = response
+    res.status(200).send({comment})
+  })
+  .catch(next)
+}
 
-module.exports = { getCommentsByArticleId, postCommentByArticleId, deleteComment, getComment };
+
+
+
+module.exports = { getCommentsByArticleId, postCommentByArticleId, deleteComment, getComment, patchComment };
