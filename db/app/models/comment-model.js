@@ -1,16 +1,22 @@
 const db = require("../../connection");
 
 
-function selectCommentsByArticleId(id, sort_by = "created_at", order = "desc") {
+function selectCommentsByArticleId(id, sort_by = "created_at", order = "desc", limit = 10, page = 1) {
   const acceptedSortBy = ["created_at"];
   const acceptedOrder = ["desc", "asc"];
+  let queryVals = [id]
 
   if (!acceptedSortBy.includes(sort_by) || !acceptedOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: "Bad Request" });
   }
 
-  const queryStr = `SELECT * FROM comments WHERE article_id = $1 ORDER BY ${sort_by} ${order}`;
-  return db.query(queryStr, [id]).then((response) => {
+ let queryStr = `SELECT * FROM comments WHERE article_id = $1 ORDER BY ${sort_by} ${order}`;
+
+  const offset = (page*limit)-limit
+  queryStr += ` LIMIT $${queryVals.length+1} OFFSET $${queryVals.length+2}`
+  queryVals.push(limit, offset)
+
+  return db.query(queryStr, queryVals).then((response) => {
     return response.rows;
   });
 }
