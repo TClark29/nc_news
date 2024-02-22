@@ -224,6 +224,24 @@ describe("/api/articles/:id", () => {
         });
     });
   });
+  describe("DELETE", ()=>{
+    test("Deletes article at correct id and returns a 204", ()=>{
+      return request(app)
+      .delete('/api/articles/1')
+      .expect(204)
+      .then((response)=>{
+        expect(response.body).toEqual({})
+      })
+    })
+    test('Returns 404 if given id that does not exist',()=>{
+      return request(app)
+      .delete('/api/articles/1000')
+      .expect(404)
+      .then((response)=>{
+        expect(response.body.msg).toEqual('Not Found')
+      })
+    })
+  })
 });
 describe("api/articles", () => {
   describe("GET", () => {
