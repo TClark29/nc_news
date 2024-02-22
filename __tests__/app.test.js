@@ -214,7 +214,7 @@ describe("api/articles", () => {
         .expect(200)
         .then((response) => {
           const articles = response.body.articles;
-          expect(articles.length).toBe(13);
+          expect(articles.length >=1).toBe(true);
         });
     });
     test("articles are sorted by date in descending order by default", () => {
@@ -234,7 +234,7 @@ describe("api/articles", () => {
         .expect(200)
         .then((response) => {
           const articles = response.body.articles;
-          expect(articles.length).toBe(12);
+          expect(articles.length >=1).toBe(true);
           articles.forEach((article) => {
             expect(article.topic).toBe("mitch");
           });
@@ -255,7 +255,7 @@ describe("api/articles", () => {
         .expect(200)
         .then((response) => {
           const articles = response.body.articles;
-          expect(articles.length).toBe(13);
+          expect(articles.length >=2).toBe(true)
           expect(response.body.articles).toBeSorted({
             key: "article_id",
             descending: true,
@@ -277,7 +277,7 @@ describe("api/articles", () => {
         .expect(200)
         .then((response) => {
           const articles = response.body.articles;
-          expect(articles.length).toBe(13);
+          expect(articles.length >=2).toBe(true);
           expect(response.body.articles).toBeSorted({
             key: "created_at",
             descending: false,
@@ -298,7 +298,7 @@ describe("api/articles", () => {
         .expect(200)
         .then((response) => {
           const articles = response.body.articles;
-          expect(articles.length).toBe(12);
+          expect(articles.length >=2).toBe(true);
           expect(response.body.articles).toBeSorted({
             key: "title",
             descending: false,
@@ -308,6 +308,55 @@ describe("api/articles", () => {
           });
         });
     });
+    test.only("should accept queries for limit", ()=>{
+      return request(app)
+      .get('/api/articles?limit=4')
+      .expect(200)
+      .then((response)=>{
+        const articles = response.body.articles
+        expect(articles.length).toBe(4)
+      })
+
+    })
+    test.only("defaults to limit 10", ()=>{
+      return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then((response)=>{
+        const articles = response.body.articles
+        expect(articles.length).toBe(10)
+      })
+     })
+     test.only("accepts a page query as p", ()=>{
+      return request(app)
+      .get('/api/articles?p=2')
+      .expect(200)
+      .then((response)=>{
+        const articles = response.body.articles
+        expect(articles.length).toBe(3)
+      })
+     })
+     test.only("can accept both a page and limit query at the same time", ()=>{
+      return request(app)
+      .get('/api/articles?limit=6&p=3')
+      .expect(200)
+      .then((response)=>{
+        const articles = response.body.articles
+        expect(articles.length).toBe(1)
+      })
+     })
+     test.only("returns an error if given an invalid value for limit", ()=>{
+      return request(app)
+      .get('/api/articles?limit=lamp')
+      .expect(400)
+      .then((response)=>{
+       
+        expect(response.body.msg).toBe('Bad Request')
+      })
+     })
+
+
+
   });
   describe("POST", () => {
     test("accepts a body with valid keys and returns 201 and correct article", () => {

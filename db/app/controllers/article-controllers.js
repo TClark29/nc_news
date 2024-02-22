@@ -9,12 +9,16 @@ function getArticles(req, res, next) {
   const topic = req.query.topic;
    const sort_by = req.query.sort_by
    const order = req.query.order
-  return selectAllArticles(topic, sort_by, order)
+   const limit = req.query.limit
+   const page = req.query.p
+  return selectAllArticles(topic, sort_by, order, limit, page)
     .then((response) => {
       const articles = response;
       res.status(200).send({ articles });
     })
-    .catch(next);
+    .catch((err)=>{
+      next(err)
+    });
 }
 
 function getArticle(req, res, next) {

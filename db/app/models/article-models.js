@@ -15,7 +15,7 @@ function selectArticleById(id) {
   });
 }
 
-function selectAllArticles(topic, sort_by = "created_at", order = "desc") {
+function selectAllArticles(topic, sort_by = "created_at", order = "desc", limit = 10, page = 1) {
   const acceptedSortBy = ["created_at", 'article_id', 'author', 'topic', 'votes', 'title'];
   const acceptedOrder = ["desc", "asc"];
   const queryVals = [];
@@ -35,8 +35,12 @@ function selectAllArticles(topic, sort_by = "created_at", order = "desc") {
     queryVals.push(topic);
   }
 
-  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
 
+  const offset = (page*limit - limit)
+ queryStr += ` LIMIT ${'$'+ (queryVals.length+1)} OFFSET ${'$'+ (queryVals.length+2)}`
+  
+  queryVals.push(limit, offset)
   return db.query(queryStr, queryVals).then((response) => {
     return response.rows;
   });
