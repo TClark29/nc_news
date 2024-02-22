@@ -416,6 +416,51 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
+  describe("PATCH", ()=>{
+    test('Updates the votes on a comment by given comment_id', ()=>{
+      const sentBody = {inc_votes: 2}
+      return request(app)
+      .patch('/api/comments/1')
+      .send(sentBody)
+      .expect(200)
+      .then((response)=>{
+        const comment = response.body.comment
+        expect(comment.comment_id).toBe(1)
+        expect(comment.votes).toBe(18)
+
+      })
+    })
+    test('responds with a 404 if given comment id that does not exist', ()=>{
+      const sentBody = {inc_votes: 2}
+      return request(app)
+      .patch('/api/comments/100000')
+      .send(sentBody)
+      .expect(404)
+      .then((response)=>{
+        expect(response.body.msg).toBe('Not Found')
+      })
+    })
+    test('responds with 400 if sent an invalid body', ()=>{
+      const sentBody = {example : 1}
+      return request(app)
+      .patch('/api/comments/1')
+      .send(sentBody)
+      .expect(400)
+      .then((response)=>{
+        expect(response.body.msg).toBe('Bad Request')
+      })
+    })
+    test('responds with 400 if sent an invalid body', ()=>{
+      const sentBody = {inc_votes: 'goat'}
+      return request(app)
+      .patch('/api/comments/1')
+      .send(sentBody)
+      .expect(400)
+      .then((response)=>{
+        expect(response.body.msg).toBe('Bad Request')
+      })
+  })
+  })
 });
 
 describe("/api/users", () => {
