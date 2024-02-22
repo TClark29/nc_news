@@ -63,6 +63,46 @@ describe("/api/topics", () => {
         });
     });
   });
+  describe("POST", ()=>{
+    test('Returns a 201 status code and returned topic on successful post', ()=>{
+      const sentBody = {
+        slug: "topic name here",
+        description: "description here"
+      }
+      return request(app)
+      .post('/api/topics')
+      .send(sentBody)
+      .expect(201)
+      .then((response)=>{
+        const topic = response.body.topic
+        expect(topic.slug).toBe("topic name here")
+        expect(topic.description).toBe("description here")
+      })
+    })
+    test('Returns a 400 if given an incomplete body (description optional)', ()=>{
+      const sentBody = { description: "description here"}
+      return request(app)
+      .post('/api/topics')
+      .send(sentBody)
+      .expect(400)
+      .then((response)=>{
+        expect(response.body.msg).toBe('Bad Request')
+      })
+
+    })
+    test('Returns a 403 if given a slug that already exists', ()=>{
+      const sentBody = { slug: "mitch"}
+      return request(app)
+      .post('/api/topics')
+      .send(sentBody)
+      .expect(403)
+      .then((response)=>{
+        expect(response.body.msg).toBe('Already Exists')
+      })
+
+    })
+    })
+
 });
 
 describe("/api/articles/:id", () => {

@@ -1,5 +1,5 @@
-module.exports = { getTopics };
-const {getAllTopics} = require('../models/topic-models.js')
+
+const {getAllTopics, insertTopic} = require('../models/topic-models.js')
 
 
 function getTopics(req, res, next) {
@@ -10,3 +10,20 @@ function getTopics(req, res, next) {
     })
     .catch(next);
 };
+
+function postTopic(req, res, next) {
+  const slug = req.body.slug
+  const desc = req.body.description
+  
+  return insertTopic(slug, desc)
+  .then((response)=>{
+    const topic = response
+    res.status(201).send({topic})
+  })
+  .catch((err=>{
+    next(err)
+
+  }))
+
+}
+module.exports = { getTopics, postTopic};
