@@ -157,5 +157,28 @@
         "created_at": "2020-03-02T07:10:00.000Z"
       }
     }
+  },
+  "POST /api/articles": {
+    "description": "Posts an article given by sent body, author and topic must already exist in db",
+    "expectedBody": {
+      "author": "valid_username",
+      "title": "title",
+      "topic": "valid_topic",
+      "body": "body",
+      "article_img_url(optional)": "url.com"
+    },
+    "queries": [],
+    "example response": {
+      "article": {
+        "author": "icellusedkars",
+        "title": "Z",
+        "topic": "mitch",
+        "article_id": 7,
+        "created_at": "2020-01-07T14:08:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": "0"
+      }
+    }
   }
 }

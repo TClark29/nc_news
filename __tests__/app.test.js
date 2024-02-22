@@ -267,7 +267,7 @@ describe("api/articles", () => {
         .get("/api/articles?sort_by=wordcount")
         .expect(400)
         .then((response) => {
-          expect(response.body.msg).toBe('Bad Request')
+          expect(response.body.msg).toBe("Bad Request");
         });
     });
 
@@ -279,7 +279,8 @@ describe("api/articles", () => {
           const articles = response.body.articles;
           expect(articles.length).toBe(13);
           expect(response.body.articles).toBeSorted({
-           key: 'created_at', descending: false
+            key: "created_at",
+            descending: false,
           });
         });
     });
@@ -288,7 +289,7 @@ describe("api/articles", () => {
         .get("/api/articles?order=random")
         .expect(400)
         .then((response) => {
-          expect(response.body.msg).toBe('Bad Request')
+          expect(response.body.msg).toBe("Bad Request");
         });
     });
     test("should accept multiple queries", () => {
@@ -299,15 +300,90 @@ describe("api/articles", () => {
           const articles = response.body.articles;
           expect(articles.length).toBe(12);
           expect(response.body.articles).toBeSorted({
-           key: 'title', descending: false
+            key: "title",
+            descending: false,
           });
-          articles.forEach((article)=>{
-            expect(article.topic).toBe('mitch')
-          })
+          articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
         });
     });
+  });
+  describe("POST", () => {
+    test("accepts a body with valid keys and returns 201 and correct article", () => {
+      const sentBody = {
+        author: "lurker",
+        title: "example title",
+        topic: "cats",
+        body: "example body",
+        article_img_url: "example.com",
+      };
+      return request(app)
+      .post('/api/articles')
+      .send(sentBody)
+      .expect(201)
+      .then((response)=>{
+        const article = response.body.article
+        expect(article.author).toBe('lurker')
+        expect(article.title).toBe('example title')
+        expect(article.topic).toBe('cats')
+        expect(article.votes).toBe(0)
+        expect(typeof article.article_id).toBe('number')
+        expect(typeof article.created_at).toBe('string')
+        expect(article.comment_count).toBe("0")
+        expect(article.article_img_url).toBe('example.com')
+       })
 
 
+    });
+    test("assigns a default img_url if not entered in body", () => {
+      const sentBody = {
+        author: "lurker",
+        title: "example title",
+        topic: "cats",
+        body: "example body",
+      };
+      return request(app)
+      .post('/api/articles')
+      .send(sentBody)
+      .expect(201)
+      .then((response)=>{
+        const article = response.body.article
+        expect(article.article_img_url).toBe("https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700")
+      })
+    })
+    test("returns 400 bad request if missing properties in the body", ()=>{
+      const sentBody = {
+        author: "lurker",
+        title: "example title"
+      }
+      return request(app)
+      .post('/api/articles')
+      .send(sentBody)
+      .expect(400)
+      .then((response)=>{
+        expect(response.body.msg).toBe('Bad Request')
+      })
+
+    })
+    test("returns 400 bad request if sent invalid values for author or topic", ()=>{
+      const sentBody = {
+        author: "invalid_user",
+        title: "example title",
+        topic: "invalid topic",
+        body: "example body",
+        article_img_url: "example.com"
+
+      }
+      return request(app)
+      .post('/api/articles')
+      .send(sentBody)
+      .expect(400)
+      .then((response)=>{
+        expect(response.body.msg).toBe('Bad Request')
+      })
+
+    })
 
   });
 });
@@ -476,51 +552,50 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
-  describe("PATCH", ()=>{
-    test('Updates the votes on a comment by given comment_id', ()=>{
-      const sentBody = {inc_votes: 2}
+  describe("PATCH", () => {
+    test("Updates the votes on a comment by given comment_id", () => {
+      const sentBody = { inc_votes: 2 };
       return request(app)
-      .patch('/api/comments/1')
-      .send(sentBody)
-      .expect(200)
-      .then((response)=>{
-        const comment = response.body.comment
-        expect(comment.comment_id).toBe(1)
-        expect(comment.votes).toBe(18)
-
-      })
-    })
-    test('responds with a 404 if given comment id that does not exist', ()=>{
-      const sentBody = {inc_votes: 2}
+        .patch("/api/comments/1")
+        .send(sentBody)
+        .expect(200)
+        .then((response) => {
+          const comment = response.body.comment;
+          expect(comment.comment_id).toBe(1);
+          expect(comment.votes).toBe(18);
+        });
+    });
+    test("responds with a 404 if given comment id that does not exist", () => {
+      const sentBody = { inc_votes: 2 };
       return request(app)
-      .patch('/api/comments/100000')
-      .send(sentBody)
-      .expect(404)
-      .then((response)=>{
-        expect(response.body.msg).toBe('Not Found')
-      })
-    })
-    test('responds with 400 if sent an invalid body', ()=>{
-      const sentBody = {example : 1}
+        .patch("/api/comments/100000")
+        .send(sentBody)
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not Found");
+        });
+    });
+    test("responds with 400 if sent an invalid body", () => {
+      const sentBody = { example: 1 };
       return request(app)
-      .patch('/api/comments/1')
-      .send(sentBody)
-      .expect(400)
-      .then((response)=>{
-        expect(response.body.msg).toBe('Bad Request')
-      })
-    })
-    test('responds with 400 if sent an invalid body', ()=>{
-      const sentBody = {inc_votes: 'goat'}
+        .patch("/api/comments/1")
+        .send(sentBody)
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad Request");
+        });
+    });
+    test("responds with 400 if sent an invalid body", () => {
+      const sentBody = { inc_votes: "goat" };
       return request(app)
-      .patch('/api/comments/1')
-      .send(sentBody)
-      .expect(400)
-      .then((response)=>{
-        expect(response.body.msg).toBe('Bad Request')
-      })
-  })
-  })
+        .patch("/api/comments/1")
+        .send(sentBody)
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad Request");
+        });
+    });
+  });
 });
 
 describe("/api/users", () => {
@@ -541,31 +616,32 @@ describe("/api/users", () => {
   });
 });
 
-describe("/api/users/:username", ()=>{
-  describe("GET", ()=>{
-    test("Responds with 200 status and user matching username",()=>{
+describe("/api/users/:username", () => {
+  describe("GET", () => {
+    test("Responds with 200 status and user matching username", () => {
       return request(app)
-      .get("/api/users/butter_bridge")
-      .expect(200)
-      .then((response) => {
-        const user = response.body.user
-        expect(user.username).toBe('butter_bridge')
-        expect(user.avatar_url).toBe('https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg')
-        expect(user.name).toBe('jonny')
-        expect(Object.keys(user).length).toBe(3)
-       })
-    })
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then((response) => {
+          const user = response.body.user;
+          expect(user.username).toBe("butter_bridge");
+          expect(user.avatar_url).toBe(
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+          );
+          expect(user.name).toBe("jonny");
+          expect(Object.keys(user).length).toBe(3);
+        });
+    });
     test("Responds with a 404 when given an invalid username", () => {
       return request(app)
-      .get("/api/users/not_a_user")
-      .expect(404)
-      .then((response)=>{
-        expect(response.body.msg).toBe('Not Found')
-      })
-    })
-
-  })
-})
+        .get("/api/users/not_a_user")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not Found");
+        });
+    });
+  });
+});
 
 describe("General errors", () => {
   test("Path does not exist", () => {

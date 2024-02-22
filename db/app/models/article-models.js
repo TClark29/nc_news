@@ -53,4 +53,33 @@ function updateArticleVotes(id, votes) {
   });
 }
 
-module.exports = { selectArticleById, selectAllArticles, updateArticleVotes };
+function insertArticle(author, title, body, topic, article_img_url){
+
+  let queryVals = [author, title, body, topic]
+
+  let queryStr = `INSERT INTO articles (author, title, body, topic`
+
+  if (article_img_url){
+    queryStr += `, article_img_url`
+    queryVals.push(article_img_url)
+
+  }
+
+  queryStr+= `) VALUES ($1, $2, $3, $4`
+
+  if (article_img_url){
+    queryStr += `, $5`
+  }
+  queryStr +=`) RETURNING *`
+
+  return db.query(queryStr, queryVals)
+    .then((response)=>{
+      const id  = response.rows[0].article_id
+      return selectArticleById(id)
+  })
+  
+
+
+}
+
+module.exports = { selectArticleById, selectAllArticles, updateArticleVotes, insertArticle };
