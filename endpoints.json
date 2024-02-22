@@ -53,6 +53,11 @@
       }
     }
   },
+  "DELETE /api/articles/:id": {
+    "description": "deletes an article and associated comments by id",
+    "queries": [],
+    "example response": {}
+  },
   "GET /api/articles/:id/comments": {
     "description": "returns comments from a single article by ID given as a parameter, default limit 10 page 1",
     "queries": ["limit", "p"],

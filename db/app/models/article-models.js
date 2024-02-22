@@ -1,12 +1,11 @@
 const db = require("../../connection");
 
-
 function selectArticleById(id) {
   const queryStr = `SELECT articles.author, title, topic, articles.article_id, articles.created_at, articles.votes, article_img_url, COUNT (comments.article_id) AS comment_count FROM articles 
   LEFT JOIN comments
   ON articles.article_id = comments.article_id
   WHERE articles.article_id = $1
-  GROUP BY articles.article_id;`
+  GROUP BY articles.article_id;`;
   return db.query(queryStr, [id]).then((response) => {
     if (response.rowCount === 0) {
       return Promise.reject({ status: 404, msg: "Not Found" });
@@ -15,8 +14,21 @@ function selectArticleById(id) {
   });
 }
 
-function selectAllArticles(topic, sort_by = "created_at", order = "desc", limit = 10, page = 1) {
-  const acceptedSortBy = ["created_at", 'article_id', 'author', 'topic', 'votes', 'title'];
+function selectAllArticles(
+  topic,
+  sort_by = "created_at",
+  order = "desc",
+  limit = 10,
+  page = 1
+) {
+  const acceptedSortBy = [
+    "created_at",
+    "article_id",
+    "author",
+    "topic",
+    "votes",
+    "title",
+  ];
   const acceptedOrder = ["desc", "asc"];
   const queryVals = [];
 
@@ -37,10 +49,12 @@ function selectAllArticles(topic, sort_by = "created_at", order = "desc", limit 
 
   queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
 
-  const offset = (page*limit - limit)
- queryStr += ` LIMIT ${'$'+ (queryVals.length+1)} OFFSET ${'$'+ (queryVals.length+2)}`
-  
-  queryVals.push(limit, offset)
+  const offset = page * limit - limit;
+  queryStr += ` LIMIT ${"$" + (queryVals.length + 1)} OFFSET ${
+    "$" + (queryVals.length + 2)
+  }`;
+
+  queryVals.push(limit, offset);
   return db.query(queryStr, queryVals).then((response) => {
     return response.rows;
   });
@@ -57,33 +71,39 @@ function updateArticleVotes(id, votes) {
   });
 }
 
-function insertArticle(author, title, body, topic, article_img_url){
-
-  let queryVals = [author, title, body, topic]
-
-  let queryStr = `INSERT INTO articles (author, title, body, topic`
-
-  if (article_img_url){
-    queryStr += `, article_img_url`
-    queryVals.push(article_img_url)
-
+function insertArticle(author, title, body, topic, article_img_url) {
+  let queryVals = [author, title, body, topic];
+  let queryStr = `INSERT INTO articles (author, title, body, topic`;
+  if (article_img_url) {
+    queryStr += `, article_img_url`;
+    queryVals.push(article_img_url);
   }
-
-  queryStr+= `) VALUES ($1, $2, $3, $4`
-
-  if (article_img_url){
-    queryStr += `, $5`
+  queryStr += `) VALUES ($1, $2, $3, $4`;
+  if (article_img_url) {
+    queryStr += `, $5`;
   }
-  queryStr +=`) RETURNING *`
-
-  return db.query(queryStr, queryVals)
-    .then((response)=>{
-      const id  = response.rows[0].article_id
-      return selectArticleById(id)
-  })
-  
-
-
+  queryStr += `) RETURNING *`;
+  return db.query(queryStr, queryVals).then((response) => {
+    const id = response.rows[0].article_id;
+    return selectArticleById(id);
+  });
 }
 
-module.exports = { selectArticleById, selectAllArticles, updateArticleVotes, insertArticle };
+function deleteArticleById(id) {
+ const queryVals = [id];
+   const queryStr = `DELETE FROM articles WHERE article_id = $1`;
+return db.query(queryStr, queryVals)
+    .then((response) => {
+ return response;
+    });
+}
+
+module.exports = {
+  selectArticleById,
+  selectAllArticles,
+  updateArticleVotes,
+  insertArticle,
+  deleteArticleById,
+};
+
+
