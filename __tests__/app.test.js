@@ -436,7 +436,7 @@ describe("/api/users", () => {
   });
 });
 
-describe.only("/api/users/:username", ()=>{
+describe("/api/users/:username", ()=>{
   describe("GET", ()=>{
     test("Responds with 200 status and user matching username",()=>{
       return request(app)
