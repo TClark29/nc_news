@@ -308,7 +308,7 @@ describe("api/articles", () => {
           });
         });
     });
-    test.only("should accept queries for limit", ()=>{
+    test("should accept queries for limit", ()=>{
       return request(app)
       .get('/api/articles?limit=4')
       .expect(200)
@@ -318,7 +318,7 @@ describe("api/articles", () => {
       })
 
     })
-    test.only("defaults to limit 10", ()=>{
+    test("defaults to limit 10", ()=>{
       return request(app)
       .get('/api/articles')
       .expect(200)
@@ -327,7 +327,7 @@ describe("api/articles", () => {
         expect(articles.length).toBe(10)
       })
      })
-     test.only("accepts a page query as p", ()=>{
+     test("accepts a page query as p", ()=>{
       return request(app)
       .get('/api/articles?p=2')
       .expect(200)
@@ -336,7 +336,7 @@ describe("api/articles", () => {
         expect(articles.length).toBe(3)
       })
      })
-     test.only("can accept both a page and limit query at the same time", ()=>{
+     test("can accept both a page and limit query at the same time", ()=>{
       return request(app)
       .get('/api/articles?limit=6&p=3')
       .expect(200)
@@ -345,7 +345,7 @@ describe("api/articles", () => {
         expect(articles.length).toBe(1)
       })
      })
-     test.only("returns an error if given an invalid value for limit", ()=>{
+     test("returns an error if given an invalid value for limit", ()=>{
       return request(app)
       .get('/api/articles?limit=lamp')
       .expect(400)
@@ -353,10 +353,19 @@ describe("api/articles", () => {
        
         expect(response.body.msg).toBe('Bad Request')
       })
+      
      })
+     test("returns an error if given an invalid value for page", ()=>{
+      return request(app)
+      .get('/api/articles?p=one')
+      .expect(400)
+      .then((response)=>{
+       
+        expect(response.body.msg).toBe('Bad Request')
+      })
 
 
-
+    })
   });
   describe("POST", () => {
     test("accepts a body with valid keys and returns 201 and correct article", () => {
