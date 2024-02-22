@@ -9,9 +9,14 @@ const {
 
 function getCommentsByArticleId(req, res, next) {
   const id = req.params.article_id;
+  const limit = req.query.limit
+  const page = req.query.p
+  const sort_by = req.query.sort_by
+  const order = req.query.order
+  console.log(limit)
   return selectArticleById(id)
     .then(() => {
-      return selectCommentsByArticleId(id);
+      return selectCommentsByArticleId(id, sort_by, order, limit, page);
     })
     .then((response) => {
       const comments = response;
@@ -24,6 +29,7 @@ function postCommentByArticleId(req, res, next) {
   const id = req.params.article_id;
   const body = req.body.body;
   const username = req.body.username;
+
 
   return selectArticleById(id)
     .then(() => {

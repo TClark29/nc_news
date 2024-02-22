@@ -71,8 +71,8 @@
     }
   },
   "POST /api/articles/:id/comments": {
-    "description": "Posts a comment to the article included as a parametric endpoint",
-    "queries": [],
+    "description": "Posts a comment to the article included as a parametric endpoint, default limit 10 page 1",
+    "queries": ["limit", "p"],
     "example response": {
       "comment": {
         "comment_id": 19,

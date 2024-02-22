@@ -454,7 +454,7 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(200)
         .then((response) => {
           const comments = response.body.comments;
-          expect(comments.length).toBe(11);
+          expect(comments.length).toBe(10);
           comments.forEach((comment) => {
             expect(typeof comment.comment_id).toBe("number");
             expect(typeof comment.votes).toBe("number");
@@ -498,6 +498,61 @@ describe("/api/articles/:article_id/comments", () => {
           expect(response.body.comments).toEqual([]);
         });
     });
+    test("Defaults to a limit of 10", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(10);
+        });
+    });
+    test("Limit can be given as query", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(5);
+        });
+    });
+    test("Page can be given as a query", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=2")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(1);
+        });
+    });
+    test("Page and limit queries work at the same time", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=4&p=3")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(3);
+        });
+        
+    });
+    test("Returns 400 for invalid limit", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=cow")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe('Bad Request');
+        });
+        
+    });
+    test("Returns 400 for invalid page", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=goose")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe('Bad Request');
+        });
+        
+    });
+
+
+
+
   });
   describe("POST", () => {
     test("Can post an article at valid id by sending body and username", () => {
