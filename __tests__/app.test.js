@@ -21,7 +21,7 @@ describe("/api/", () => {
     });
     test("should return an object with a key of endpoints countaining objects. JSON should match endpoints.json file ", () => {
       return request(app)
-        .get("/api")
+        .get("/api/")
         .expect(200)
         .then((response) => {
           const result = response.body;
