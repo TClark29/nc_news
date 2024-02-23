@@ -107,19 +107,19 @@ describe("/api/topics", () => {
 
 describe("/api/articles/:id", () => {
   describe("GET", () => {
-    test("returns a 200 status and a body with the correct keys", () => {
+    test.only("returns a 200 status and a body with the correct keys", () => {
       return request(app)
         .get("/api/articles/1")
         .expect(200)
         .then((response) => {
           const article = response.body.article;
-          expect(typeof article.article_id).toBe("number");
-          expect(typeof article.title).toBe("string");
-          expect(typeof article.topic).toBe("string");
-          expect(typeof article.author).toBe("string");
+          expect(article.article_id).toBe(1);
+          expect(article.title).toBe('Living in the shadow of a great man');
+          expect(article.topic).toBe("mitch");
+          expect(article.author).toBe("butter_bridge");
           expect(typeof article.created_at).toBe("string");
-          expect(typeof article.votes).toBe("number");
-          expect(typeof article.article_img_url).toBe("string");
+          expect(article.votes).toBe(100);
+          expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
         });
     });
     test("Returns a 400 bad request error when given an :id parameter which is not valid", () => {
