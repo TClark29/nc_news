@@ -38,7 +38,9 @@ function postCommentByArticleId(req, res, next) {
       const comment = response;
       res.status(201).send({ comment });
     })
-    .catch(next);
+    .catch((err)=>{
+      next(err)
+    });
 }
 
 function deleteComment(req, res, next){

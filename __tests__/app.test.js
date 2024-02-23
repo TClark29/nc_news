@@ -4,7 +4,7 @@ const db = require("../db/connection.js");
 const request = require("supertest");
 const app = require("../db/app/app.js");
 const { readEndpointsFile } = require("../utils.js");
-const { forEach } = require("../db/data/test-data/articles.js");
+
 
 beforeEach(() => {
   return seed(data);
@@ -19,7 +19,7 @@ describe("/api/", () => {
     test("returns a 200 status code", () => {
       return request(app).get("/api").expect(200);
     });
-    test("should return an object with a key of endpoints countaining objects. JSON should match endpoints.json file ", () => {
+    test("should return an object with a key of endpoints countaining objects with a description. JSON should match endpoints.json file ", () => {
       return request(app)
         .get("/api/")
         .expect(200)
@@ -29,11 +29,17 @@ describe("/api/", () => {
           return Promise.all([result, expectedResult]).then((response) => {
             expect(response[0]).toEqual(response[1]);
             expect(typeof response[0]).not.toBe("string");
+            for (const endpoint in result.endpoints){
+              expect(typeof result.endpoints[endpoint].description).toBe('string')
+            }
+           
+              
+            })
           });
         });
     });
   });
-});
+;
 
 describe("/api/topics", () => {
   describe("GET", () => {
@@ -468,6 +474,23 @@ describe("api/articles", () => {
         expect(article.article_img_url).toBe("https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700")
       })
     })
+    test("ignores properties in sent body that are not required", () => {
+      const sentBody = {
+        author: "lurker",
+        title: "example title",
+        topic: "cats",
+        body: "example body",
+        wordCount: 1000
+      };
+      return request(app)
+      .post('/api/articles')
+      .send(sentBody)
+      .expect(201)
+      .then((response)=>{
+        const article = response.body.article
+        expect(article.wordCount).toBe(undefined)
+      })
+    })
     test("returns 400 bad request if missing properties in the body", ()=>{
       const sentBody = {
         author: "lurker",
@@ -629,6 +652,18 @@ describe("/api/articles/:article_id/comments", () => {
           expect(typeof comment.created_at).toBe("string");
         });
     });
+    test("Ignore invalid properties", () => {
+      const postData = { body: "example body", username: "butter_bridge", colour: 'blue' };
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send(postData)
+        .expect(201)
+        .then((response)=>{
+          const comment = response.body.comment
+          expect(comment.colour).toBe(undefined)
+
+        })
+    })
     test("Returns 400 Bad Request if given an article_id that is invalid", () => {
       const postData = { body: "example body", username: "butter_bridge" };
       return request(app)
