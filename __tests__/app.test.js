@@ -107,7 +107,7 @@ describe("/api/topics", () => {
 
 describe("/api/articles/:id", () => {
   describe("GET", () => {
-    test.only("returns a 200 status and a body with the correct keys", () => {
+    test("returns a 200 status and a body with the correct keys", () => {
       return request(app)
         .get("/api/articles/1")
         .expect(200)
