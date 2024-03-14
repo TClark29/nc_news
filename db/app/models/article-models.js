@@ -24,6 +24,7 @@ function selectAllArticles(
   const acceptedSortBy = [
     "created_at",
     "article_id",
+    "comment_count",
     "author",
     "topic",
     "votes",
